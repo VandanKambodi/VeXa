@@ -2,7 +2,7 @@
 A project management app designed to help you manage your projects more efficiently.
 
 ## Features
-- Project management
+- Project managementt
 - Team collaboration
 - Community building
 - Time tracking
