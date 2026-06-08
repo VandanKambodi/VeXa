@@ -10,6 +10,7 @@ import {
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IconButton, Modal } from "@mui/material";
+import Google from "../Images/google.svg";
 import CircularProgress from "@mui/material/CircularProgress";
 import { loginFailure, loginStart, loginSuccess } from "../redux/userSlice";
 import { openSnackbar } from "../redux/snackbarSlice";
@@ -442,7 +443,13 @@ const SignIn = ({ setSignInOpen, setSignUpOpen }) => {
                   <CircularProgress color="inherit" size={20} />
                 ) : (
                   <>
-                    <GoogleIcon src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1000px-Google_%22G%22_Logo.svg.png?20210618182606" />
+                  <img
+    src={Google}
+    alt="Google"
+    width={20}
+    height={20}
+    style={{ marginRight: "8px" }}
+  />
                     Sign In with Google</>
                 )}
               </OutlinedBox>

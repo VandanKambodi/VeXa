@@ -155,7 +155,7 @@ const Menu = ({ darkMode, setDarkMode, setMenuOpen, setNewTeam }) => {
       <Flex>
         <Link to="/" style={{ textDecoration: "none", color: "inherit", alignItems: 'center',display: 'flex' }}>
           <Logo>
-            <Image src={LogoIcon} />
+            <img src={LogoIcon} alt="Google Logo" width={20} height={20} />
             VEXA
           </Logo>
         </Link>

@@ -54,8 +54,8 @@ const TeamContainer = styled.div`
 
 const Team = () => {
   const member = [{
-    photo: "https://avatars.githubusercontent.com/u/64485885?v=4",
-    name: "Rishav Chanda",
+    photo: "https://media.licdn.com/dms/image/v2/D4D03AQH4KpjEu69asw/profile-displayphoto-scale_400_400/B4DZxIVd65JEAg-/0/1770740115606?e=1782345600&v=beta&t=qp81ds4stffw4jLXfcNat59J0okOXJA6las0iMpQiTc",
+    name: "Vandan Kambodi",
     title: "Full-Stack Developer",
     bio: "I have expertise in full-stack web development, Android app development, and MERN stack development. I am knowledgeable in various programming languages, frameworks, and technologies and strive to create high-quality, user-friendly applications."
   }]
