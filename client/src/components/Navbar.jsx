@@ -21,93 +21,140 @@ import { useNavigate } from "react-router-dom";
 const Container = styled.div`
   position: sticky;
   top: 0;
-  height: 56px;
-  margin: 6px 6px 0px 6px;
+  height: 64px;
+  margin: 8px 16px 0px 16px;
   border-radius: 12px;
   z-index: 99;
-  box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.04);
   background-color: ${({ theme }) => theme.bgLighter};
+  transition: all 0.3s ease;
+
+  /* Glassmorphism Effect */
+  @supports (backdrop-filter: blur(10px)) {
+    background-color: ${({ theme }) => theme.bgLighter + "E6"}; /* 90% opacity */
+    backdrop-filter: blur(10px);
+  }
+
   @media screen and (max-width: 480px) {
-    margin: 0px 0px 0px 0px;
+    margin: 0px;
+    border-radius: 0px;
     height: 60px;
   }
 `;
+
 const Wrapper = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0px 14px;
-  @media screen and (max-width: 480px) {
-    padding: 0px 4px;
-  }
+  justify-content: space-between; /* Improved from flex-end to handle left/right spacing naturally */
+  padding: 0px 24px;
   position: relative;
+
+  @media screen and (max-width: 480px) {
+    padding: 0px 12px;
+  }
 `;
 
 const IcoButton = styled(IconButton)`
   color: ${({ theme }) => theme.textSoft} !important;
+  transition: all 0.2s ease !important;
+  
+  &:hover {
+    color: ${({ theme }) => theme.text} !important;
+    background-color: ${({ theme }) => theme.bgDark} !important;
+  }
 `;
 
 const Search = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   width: 40%;
-  @media screen and (max-width: 480px) {
-    width: 50%;
-  }
-  left: 0px;
-  right: 0px;
-  margin: auto;
+  max-width: 450px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-radius: 100px;
   color: ${({ theme }) => theme.textSoft};
   background-color: ${({ theme }) => theme.bgDark};
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+
+  /* Highlights the entire search container when input is focused */
+  &:focus-within {
+    border: 1px solid ${({ theme }) => theme.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.primary + "26"};
+    background-color: transparent;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 45%;
+    position: relative;
+    left: 0;
+    transform: none;
+    margin: 0 16px;
+  }
+  @media screen and (max-width: 480px) {
+    width: 55%;
+  }
 `;
+
 const Input = styled.input`
   width: 100%;
+  height: 100%;
   border: none;
-  font-size: 16px;
-  padding: 10px 20px;
+  font-size: 15px;
+  padding: 0px 24px;
   border-radius: 100px;
   background-color: transparent;
   outline: none;
-  color: ${({ theme }) => theme.textSoft};
+  color: ${({ theme }) => theme.text};
+  
+  &::placeholder {
+    color: ${({ theme }) => theme.textSoft};
+    font-weight: 400;
+  }
 `;
 
 const Button = styled.button`
-  padding: 5px 18px;
+  padding: 8px 20px;
   background-color: transparent;
-  border: 1px solid ${({ theme }) => theme.primary};
+  border: 1.5px solid ${({ theme }) => theme.primary};
   color: ${({ theme }) => theme.primary};
-  border-radius: 3px;
-  font-weight: 500;
+  border-radius: 100px;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 15px;
-  border-radius: 100px;
-  transition: all 0.3s ease;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+
   &:hover {
     background-color: ${({ theme }) => theme.primary};
-    color: ${({ theme }) => theme.text};
+    color: ${({ theme }) => theme.bg}; /* Ensure text pops against primary color */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px ${({ theme }) => theme.primary + "40"};
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
 const User = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   font-weight: 500;
   font-size: 18px;
-  padding: 0px 8px;
   color: ${({ theme }) => theme.text};
+
   @media (max-width: 800px) {
-    gap: 2px;
-}
+    gap: 8px;
+  }
 `;
-
-
 
 const Navbar = ({ menuOpen, setMenuOpen }) => {
   const [SignUpOpen, setSignUpOpen] = useState(false);
@@ -120,6 +167,7 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
   const navigate = useNavigate();
 
   const [notification, setNotification] = useState([]);
+
   useEffect(() => {
     getUsers(token).then((res) => {
       setUsers(res.data);
@@ -129,7 +177,6 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
       }
     });
   }, [dispatch]);
-
 
   const getNotifications = async () => {
     try {
@@ -193,10 +240,12 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
           <IcoButton onClick={() => setMenuOpen(!menuOpen)}>
             <MenuIcon />
           </IcoButton>
+          
           <Search>
             <Input placeholder="Search" />
-            <SearchIcon style={{ marginRight: "20px", marginLeft: "20px" }} />
+            <SearchIcon style={{ marginRight: "16px", color: "inherit" }} />
           </Search>
+          
           <User>
             {currentUser ? (
               <>
@@ -224,7 +273,7 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
                     <Avatar
                       src={currentUser.img}
                       alt={currentUser.name}
-                      sx={{ width: 34, height: 34 }}
+                      sx={{ width: 36, height: 36, fontSize: "16px", fontWeight: "600" }}
                     >
                       {currentUser.name.charAt(0)}
                     </Avatar>
@@ -239,6 +288,7 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
           </User>
         </Wrapper>
       </Container>
+      
       {currentUser && (
         <AccountDialog
           open={open}
@@ -248,6 +298,7 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
           currentUser={currentUser}
         />
       )}
+      
       {currentUser && (
         <NotificationDialog
           open={open2}

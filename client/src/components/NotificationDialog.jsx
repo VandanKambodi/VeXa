@@ -6,55 +6,85 @@ import { logout } from "../redux/userSlice";
 
 const Wrapper = styled.div`
   width: 100%;
-  min-width: 300px;
+  min-width: 320px;
   max-width: 400px;
-  height: 500px;
+  max-height: 480px; /* Changed from fixed height to max-height */
   display: flex;
   flex-direction: column;
   position: relative;
-  padding: 6px 2px;
-  background-color: ${({ theme }) => theme.card};
+  background-color: ${({ theme }) => theme.bgLighter || theme.card};
+  overflow-y: auto;
+
+  /* Custom Sleek Scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => theme.soft};
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${({ theme }) => theme.textSoft};
+  }
 `;
 
 const Heading = styled.div`
-  font-size: 22px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
   color: ${({ theme }) => theme.text};
-  margin: 4px 0px 12px 12px;
+  padding: 16px 20px;
+  margin: 0;
+  position: sticky;
+  top: 0;
+  background-color: ${({ theme }) => theme.bgLighter || theme.card};
+  z-index: 10;
+  border-bottom: 1px solid ${({ theme }) => theme.soft};
 `;
 
 const Item = styled.div`
   display: flex;
-  gap: 10px;
-  padding: 4px 12px 0px 12px;
+  gap: 16px;
+  padding: 16px 20px 0px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.itemHover || theme.soft + "33"};
+  }
 `;
 
 const Details = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 0px 0px 0px 0px;
+  gap: 6px;
+  padding-bottom: 16px; /* Moved padding here to wrap the Hr properly */
 `;
 
 const Title = styled.div`
   font-size: 14px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.textSoft};
+  font-weight: 600;
+  color: ${({ theme }) => theme.text};
+  text-transform: capitalize;
 `;
 
 const Desc = styled.div`
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
-  color: ${({ theme }) => theme.textSoft + "99"};
+  color: ${({ theme }) => theme.textSoft};
+  line-height: 1.4;
 `;
 
 const Hr = styled.hr`
-  background-color: ${({ theme }) => theme.soft + "99"};
+  background-color: ${({ theme }) => theme.soft};
   border: none;
   width: 100%;
   height: 1px;
-  margin-top: 4px;
+  margin: 12px 0px 0px 0px;
+  opacity: 0.6;
 `;
 
 const NotificationDialog = ({
@@ -76,14 +106,27 @@ const NotificationDialog = ({
         horizontal: "right",
       }}
       anchorPosition={{ top: 60, left: 1800 }}
+      // Injecting modern UI curves and shadows directly into the Popover Paper
+      PaperProps={{
+        sx: {
+          borderRadius: "12px",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
+          backgroundImage: "none",
+        }
+      }}
     >
       <Wrapper>
         <Heading>Notifications</Heading>
 
-        {notification.map((item) => (
-          <Item>
+        {notification.map((item, index) => (
+          <Item key={index}> {/* Added key to prevent React console warnings */}
             <Avatar
-              sx={{ width: "32px", height: "32px" }}
+              sx={{ 
+                width: "36px", 
+                height: "36px", 
+                fontSize: "14px", 
+                fontWeight: "600" 
+              }}
               src={currentUser.img}
             >
               {currentUser.name.charAt(0)}
@@ -95,7 +138,6 @@ const NotificationDialog = ({
             </Details>
           </Item>
         ))}
-
       </Wrapper>
     </Popover>
   );

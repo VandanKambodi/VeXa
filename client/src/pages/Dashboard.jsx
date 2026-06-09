@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useState, useEffect } from "react";
 import ProjectCard from "../components/Card";
@@ -19,226 +18,214 @@ import { getProjects, userTasks } from "../api";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
 
 const Container = Styled.div`
-@media screen and (max-width: 480px) {
-  padding: 10px 10px;
-}
+  padding: 24px 32px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media screen and (max-width: 768px) {
+    padding: 16px 20px;
+  }
 `;
 
 const Section = Styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: start;
+  align-items: flex-start; /* Crucial to prevent vertical stretching & overlapping */
+  justify-content: flex-start;
+  gap: 32px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    flex-direction: column-reverse; /* Stacks Left under Right on mobile */
+    gap: 24px;
+  }
 `;
 
 const Left = Styled.div`
-  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: start;
-  gap: 20px;
-  flex: 1.4;
+  gap: 24px;
+  flex: 1 1 70%; /* Takes 70% of row width */
+  min-width: 0; /* Prevents flex children from pushing bounds out */
+
+  @media (max-width: 960px) {
+    flex: 1 1 100%;
+    width: 100%;
+  }
 `;
 
 const Right = Styled.div`
-  width: 100%;
-  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: start;
-  gap: 20px;
+  flex: 1 1 30%; /* Takes 30% of row width */
+  min-width: 260px; /* Safe minimum width for the buttons */
+
+  @media (max-width: 960px) {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 100%;
+  }
 `;
 
 const TopBar = Styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: end;
+  flex-direction: column; /* Stacked for a sleek sidebar look on Desktop */
   gap: 16px;
-  margin: 20px 0px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    flex-direction: row;
+    flex-wrap: wrap; /* Allows buttons to sit side-by-side on tablet */
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column; /* Stacks buttons on tiny phone screens */
+  }
 `;
 
 const CreateButton = Styled.div`
-  padding: 20px 30px;
-  text-align: left;
-  font-size: 16px;
-  font-weight: 800;
-  color: ${({ theme }) => theme.text};
-  border-radius: 12px;
-  background: linear-gradient(76.35deg, #801AE6 15.89%, #A21AE6 89.75%);
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
+  gap: 16px;
   cursor: pointer;
-  transition: all 0.5s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.2);
+  white-space: nowrap; /* Keeps text on one line */
+
   &:hover {
-    background: linear-gradient(76.35deg, #801AE6 15.89%, #A21AE6 89.75%);
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.35);
   }
-  gap: 14px;
+
+  /* Make them stretch equally on mobile row layout */
+  @media (max-width: 960px) {
+    flex: 1;
+    justify-content: center; /* Centers content when stretched horizontally */
+  }
 
   ${({ btn }) =>
     btn === "team" &&
     `
-    background: linear-gradient(76.35deg, #FFC107 15.89%, #FFC107 89.75%);
+    color: #1a1a1a;
+    background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
     &:hover {
-      background: linear-gradient(76.35deg, #FFC107 15.89%, #FFC107 89.75%);
-      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 12px 32px rgba(245, 158, 11, 0.35);
     }
   `}
 `;
 
 const Icon = Styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   align-items: center;
-  background: ${({ theme }) => theme.text};
-  color: ${({ theme }) => theme.primary};
+  justify-content: center;
+  background: ${({ theme }) => theme.card || '#ffffff'};
   border-radius: 50%;
-  padding: 4px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 `;
 
 const StatsWrapper = Styled.div`
   display: grid;
-  grid-template-columns: repeat(2, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjusted minmax to prevent blowing out bounds */
   grid-gap: 24px;
-  margin: 20px 0px;
+  width: 100%;
 `;
 
 const StatCard = Styled.div`
   width: 100%;
-  height: 100%;
-  padding: 4px;
-  text-align: left;
-  margin: 2px;
-  font-size: 18px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text};
-  border-radius: 12px;
-  background-color: ${({ theme }) => theme.card};
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.20);
-  transition: all 0.5s ease;
+  box-sizing: border-box;
+  padding: 24px;
+  border-radius: 20px;
+  background-color: ${({ theme }) => theme.card || theme.bgLighter};
+  border: 1px solid ${({ theme }) => theme.soft};
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
   &:hover {
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border-color: ${({ theme }) => theme.soft2};
   }
 `;
 
 const RecentProjects = Styled.div`
   width: 100%;
-  height: 100%;
-  text-align: left;
-  margin: 2px;
-  font-size: 18px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text};
   border-radius: 12px;
+  margin-top: 8px;
 `;
 
-const SectionTitle = Styled.div` 
-  width: 100%;
-  padding: 0px 12px;
-  font-size: 22px;
-  font-weight: 600;
-  margin: 10px 0px 16px 0px;
+const SectionTitle = Styled.h2` 
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0px 0px 20px 0px;
   color: ${({ theme }) => theme.text};
-`;
-
-const RecentProjectsWrapper = Styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  gap: 20px;
-`;
-
-
-const Teams = Styled.div`
-  width: 100%;
+  letter-spacing: -0.5px;
 `;
 
 const TotalProjects = Styled.div` 
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: 8px 12px;
 `;
 
 const TaskCompleted = Styled.div` 
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: 8px 12px;
 `;
 
 const Progress = Styled.div`
-  width: 90%;
+  width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 10px 0px 0 0;
+  gap: 16px;
+  margin: 16px 0;
 `;
 
 const ProgressText = Styled.div`
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
   color: ${({ theme }) => theme.text};
 `;
 
 const Desc = Styled.div`
-  font-size: 12px;
-  font-weight: 500;
-  padding: 0px 4px;
-  line-spacing: 1.5;
   font-size: 13px;
-  color: ${({ theme }) => theme.soft2};
-`;
-
-const TotalWorks = Styled.div`
-  width: 100%;
-  padding: 8px 12px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.textSoft};
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* prevents text overflow */
 `;
 
 const Title = Styled.div`
-  width: 100%;
-  height: 100%;
-  text-align: left;
-  margin: 2px;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   color: ${({ theme }) => theme.text};
+  opacity: 0.9;
 `;
 
 const Span = Styled.span`
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 14px;
   color: ${({ theme }) => theme.primary};
+  margin: 0 4px;
 `;
 
-const CardWrapper = Styled.div`
-padding: 12px 0px;
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-grid-gap: 8px;
-`;
-
-const Tasks = Styled.div`
-  width: 100%;
-  padding: 4px;
-  text-align: left;
-  margin: 2px;
-  font-size: 16px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text};
-  border-radius: 12px;
-  background-color: ${({ theme }) => theme.card};
-`;
-
-const TaskCardWrapper = Styled.div`
-  padding: 12px 0px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  grid-gap: 8px;
-`;
-
-function CircularProgressWithLabel(props
-) {
+function CircularProgressWithLabel(props) {
   const theme = useTheme();
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex' }}>
@@ -265,11 +252,6 @@ function CircularProgressWithLabel(props
   );
 }
 
-// backgroundColor: 'lightyellow',
-// '& .MuiLinearProgress-bar': {
-//   backgroundColor: 'orange'
-// }
-
 const Dashboard = ({ setNewProject, setNewTeam, newProject }) => {
 
   const dispatch = useDispatch();
@@ -281,7 +263,6 @@ const Dashboard = ({ setNewProject, setNewTeam, newProject }) => {
   const [totalTasksDone, setTotalTasksDone] = useState(0);
   const [loading, setLoading] = useState(true);
   const { currentUser } = useSelector((state) => state.user);
-
 
   const token = localStorage.getItem("token");
   const getprojects = async () => {
@@ -295,7 +276,7 @@ const Dashboard = ({ setNewProject, setNewTeam, newProject }) => {
         setLoading(false);
         dispatch(
           openSnackbar({
-            message: err.response.data.message,
+            message: err.response?.data?.message || err.message,
             severity: "error",
           })
         );
@@ -318,7 +299,7 @@ const Dashboard = ({ setNewProject, setNewTeam, newProject }) => {
       .catch((err) => {
         dispatch(
           openSnackbar({
-            message: err.response.data.message,
+            message: err.response?.data?.message || err.message,
             severity: "error",
           })
         );
@@ -335,6 +316,7 @@ const Dashboard = ({ setNewProject, setNewTeam, newProject }) => {
     getprojects();
     getTasks();
     window.scrollTo(0, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newProject]);
 
 
@@ -354,7 +336,7 @@ const Dashboard = ({ setNewProject, setNewTeam, newProject }) => {
                   <Progress>
                     <LinearProgress
                       sx={{
-                        borderRadius: "10px", height: 7, width: "80%"
+                        borderRadius: "10px", height: 8, flex: 1
                       }}
                       variant="determinate"
                       value={
@@ -365,18 +347,18 @@ const Dashboard = ({ setNewProject, setNewTeam, newProject }) => {
                     />
                     <ProgressText>{totalProjectsDone.toString()}</ProgressText>
                   </Progress>
-                  <Desc>Working on&nbsp;
+                  <Desc>Working on
                     <Span> {(totalProjects - totalProjectsDone).toString()} </Span>
-                    &nbsp;projects</Desc>
+                    projects</Desc>
                 </TotalProjects>
               </StatCard>
 
               <StatCard>
                 <TaskCompleted>
-                  <Title>Total Task Done</Title>
+                  <Title>Total Tasks Done</Title>
                   <Progress>
                     <LinearProgress
-                      sx={{ borderRadius: "10px", height: 7, width: "80%" }}
+                      sx={{ borderRadius: "10px", height: 8, flex: 1 }}
                       variant="determinate"
                       value={
                         totalTasksDone === 0
@@ -387,21 +369,15 @@ const Dashboard = ({ setNewProject, setNewTeam, newProject }) => {
                     />
                     <ProgressText>{totalTasksDone}</ProgressText>
                   </Progress>
-                  <Desc><Span>{totalTasks - totalTasksDone}</Span> &nbsp;Tasks are left</Desc>
+                  <Desc><Span>{totalTasks - totalTasksDone}</Span> tasks remaining</Desc>
                 </TaskCompleted>
               </StatCard>
-
-              {/* <StatCard>
-    <TotalWorks>
-      <Title>Total Works Done</Title>
-    </TotalWorks>
-  </StatCard> */}
             </StatsWrapper>
 
             <RecentProjects>
               <SectionTitle>Recent Projects</SectionTitle>
               <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 2 }}>
-                <Masonry gutter="0px 16px">
+                <Masonry gutter="16px">
                   {
                     projects
                       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
@@ -421,18 +397,18 @@ const Dashboard = ({ setNewProject, setNewTeam, newProject }) => {
             </RecentProjects>
 
           </Left>
+          
           <Right>
-
             <TopBar>
               <CreateButton onClick={() => setNewProject(true)}>
                 <Icon>
-                  <Add style={{ color: 'inherit' }} />
+                  <Add style={{ color: '#7C3AED' }} />
                 </Icon>
                 Create New Project
               </CreateButton>
               <CreateButton btn="team" onClick={() => setNewTeam(true)}>
                 <Icon>
-                  <Add style={{ color: '#FFC107' }} />
+                  <Add style={{ color: '#D97706' }} />
                 </Icon>
                 Create New Team
               </CreateButton>
