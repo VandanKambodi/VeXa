@@ -90,6 +90,23 @@ In both client and server folder
 
 #### Open http://localhost:3000 to view the application.
 
+##  Screenshots
+- **Landing Page**
+  <img width="1366" height="644" alt="image" src="https://github.com/user-attachments/assets/dbd1fe98-fa58-4961-a74d-17d8f25a2b58" />
+
+
+- **Dashboard**
+  <img width="1366" height="642" alt="image" src="https://github.com/user-attachments/assets/2855ad6d-2732-44a8-8186-b40b84dd65d6" />
+
+  
+- **Works Page**
+  <img width="1366" height="642" alt="image" src="https://github.com/user-attachments/assets/bdd5124b-cdeb-49a0-837a-462a1b0f19b9" />
+
+
+- **Project Page**
+  <img width="1366" height="636" alt="image" src="https://github.com/user-attachments/assets/7c813a3d-7ff7-4ff7-9847-70c8f90f4f32" />
+
+
 
 ##  Contributing
 - Contributions are welcome! To contribute:
